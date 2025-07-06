@@ -458,30 +458,28 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-// 格式化时间为 yyyy-MM-dd HH:mm:ss（强制中国时区，兼容所有浏览器）
+// 只做字符串格式化，不再加8小时
 function formatTime(timeString) {
     if (!timeString) return '';
-    // 解析形如 2025-07-06T14:17:44+08:00
-    const match = timeString.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+08:00$/);
+    // 解析形如 2025-07-06T22:47:36+08:00
+    const match = timeString.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\+08:00$/);
     if (match) {
-        // 直接用中国时区
-        return timeString.replace('T', ' ').replace('+08:00', '');
+        // 直接格式化为 yyyy-MM-dd HH:mm:ss
+        const [_, y, m, d, h, min, s] = match;
+        return `${y}-${m}-${d} ${h}:${min}:${s}`;
     }
-    // 其它格式，尝试用 Date 解析并手动加8小时
+    // 其它格式，直接用 Date 解析
     let date = new Date(timeString);
     if (isNaN(date.getTime())) {
         // Safari兼容
         date = new Date(timeString.replace(/-/g, '/').replace('T', ' ').replace(/\+08:00$/, ''));
     }
-    // 补偿时区
-    let utc = date.getTime() + (date.getTimezoneOffset() * 60000);
-    let chinaDate = new Date(utc + 8 * 60 * 60 * 1000);
-    const y = chinaDate.getFullYear();
-    const m = String(chinaDate.getMonth() + 1).padStart(2, '0');
-    const d = String(chinaDate.getDate()).padStart(2, '0');
-    const h = String(chinaDate.getHours()).padStart(2, '0');
-    const min = String(chinaDate.getMinutes()).padStart(2, '0');
-    const s = String(chinaDate.getSeconds()).padStart(2, '0');
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    const h = String(date.getHours()).padStart(2, '0');
+    const min = String(date.getMinutes()).padStart(2, '0');
+    const s = String(date.getSeconds()).padStart(2, '0');
     return `${y}-${m}-${d} ${h}:${min}:${s}`;
 }
 
