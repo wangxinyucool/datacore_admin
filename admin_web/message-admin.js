@@ -458,17 +458,21 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-// 格式化时间为 yyyy-MM-dd HH:mm:ss（中国时区）
+// 格式化时间为 yyyy-MM-dd HH:mm:ss（强制中国时区）
 function formatTime(timeString) {
     if (!timeString) return '';
-    // 兼容 Safari
-    const date = new Date(timeString.replace(/-/g, '/').replace('T', ' ').replace(/\+08:00$/, ''));
-    const y = date.getFullYear();
-    const m = String(date.getMonth() + 1).padStart(2, '0');
-    const d = String(date.getDate()).padStart(2, '0');
-    const h = String(date.getHours()).padStart(2, '0');
-    const min = String(date.getMinutes()).padStart(2, '0');
-    const s = String(date.getSeconds()).padStart(2, '0');
+    // 解析为 UTC 时间
+    let date = new Date(timeString);
+    // 转为 UTC 毫秒数，再加8小时，得到中国时间
+    let utc = date.getTime() + (date.getTimezoneOffset() * 60000);
+    let chinaDate = new Date(utc + 8 * 60 * 60 * 1000);
+
+    const y = chinaDate.getFullYear();
+    const m = String(chinaDate.getMonth() + 1).padStart(2, '0');
+    const d = String(chinaDate.getDate()).padStart(2, '0');
+    const h = String(chinaDate.getHours()).padStart(2, '0');
+    const min = String(chinaDate.getMinutes()).padStart(2, '0');
+    const s = String(chinaDate.getSeconds()).padStart(2, '0');
     return `${y}-${m}-${d} ${h}:${min}:${s}`;
 }
 
