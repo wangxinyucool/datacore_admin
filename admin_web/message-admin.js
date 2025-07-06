@@ -458,15 +458,24 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-// 格式化时间为 yyyy-MM-dd HH:mm:ss（强制中国时区）
+// 格式化时间为 yyyy-MM-dd HH:mm:ss（强制中国时区，兼容所有浏览器）
 function formatTime(timeString) {
     if (!timeString) return '';
-    // 解析为 UTC 时间
+    // 解析形如 2025-07-06T14:17:44+08:00
+    const match = timeString.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+08:00$/);
+    if (match) {
+        // 直接用中国时区
+        return timeString.replace('T', ' ').replace('+08:00', '');
+    }
+    // 其它格式，尝试用 Date 解析并手动加8小时
     let date = new Date(timeString);
-    // 转为 UTC 毫秒数，再加8小时，得到中国时间
+    if (isNaN(date.getTime())) {
+        // Safari兼容
+        date = new Date(timeString.replace(/-/g, '/').replace('T', ' ').replace(/\+08:00$/, ''));
+    }
+    // 补偿时区
     let utc = date.getTime() + (date.getTimezoneOffset() * 60000);
     let chinaDate = new Date(utc + 8 * 60 * 60 * 1000);
-
     const y = chinaDate.getFullYear();
     const m = String(chinaDate.getMonth() + 1).padStart(2, '0');
     const d = String(chinaDate.getDate()).padStart(2, '0');
