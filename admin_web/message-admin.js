@@ -458,41 +458,18 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-// 格式化时间
+// 格式化时间为 yyyy-MM-dd HH:mm:ss（中国时区）
 function formatTime(timeString) {
     if (!timeString) return '';
-    
-    // 后端现在返回 YYYY-MM-DDTHH:MM:SS+08:00 格式
-    const date = new Date(timeString);
-    const now = new Date();
-    const diff = now - date;
-    
-    // 小于1分钟
-    if (diff < 60000) {
-        return '刚刚';
-    }
-    
-    // 小于1小时
-    if (diff < 3600000) {
-        return Math.floor(diff / 60000) + '分钟前';
-    }
-    
-    // 小于24小时
-    if (diff < 86400000) {
-        return Math.floor(diff / 3600000) + '小时前';
-    }
-    
-    // 小于30天
-    if (diff < 2592000000) {
-        return Math.floor(diff / 86400000) + '天前';
-    }
-    
-    // 超过30天显示具体日期
-    return date.toLocaleDateString('zh-CN') + 
-           ' ' + date.toLocaleTimeString('zh-CN', { 
-               hour: '2-digit', 
-               minute: '2-digit'
-           });
+    // 兼容 Safari
+    const date = new Date(timeString.replace(/-/g, '/').replace('T', ' ').replace(/\+08:00$/, ''));
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    const h = String(date.getHours()).padStart(2, '0');
+    const min = String(date.getMinutes()).padStart(2, '0');
+    const s = String(date.getSeconds()).padStart(2, '0');
+    return `${y}-${m}-${d} ${h}:${min}:${s}`;
 }
 
 // 点击模态框外部关闭
