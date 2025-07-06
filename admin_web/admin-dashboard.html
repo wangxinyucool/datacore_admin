@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数聚核心 - 后台管理系统</title>
+    <link rel="stylesheet" href="admin-dashboard.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- 登录界面 -->
+    <div class="login-container" id="loginContainer">
+        <div class="login-box">
+            <div class="login-header">
+                <h1 class="login-title">
+                    <i class="fas fa-shield-alt title-icon"></i>
+                    后台管理系统
+                </h1>
+                <p class="login-subtitle">数聚核心 - 管理员登录</p>
+            </div>
+            <form class="login-form" id="loginForm">
+                <div class="form-group">
+                    <label class="form-label">用户名</label>
+                    <input type="text" id="username" class="form-input" placeholder="请输入用户名" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">密码</label>
+                    <input type="password" id="password" class="form-input" placeholder="请输入密码" required>
+                </div>
+                <button type="submit" class="login-btn" id="loginBtn">
+                    <i class="fas fa-sign-in-alt btn-icon"></i>
+                    <span class="btn-text">登录</span>
+                    <div class="loading-spinner" style="display: none;">
+                        <i class="fas fa-spinner fa-spin"></i>
+                    </div>
+                </button>
+            </form>
+            <div class="login-footer">
+                <p class="footer-text">© 2024 数聚核心 - 专业的数据分析工具</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 错误提示组件 -->
+    <div class="error-toast" id="errorToast" style="display: none;">
+        <div class="error-content">
+            <i class="fas fa-exclamation-triangle error-icon"></i>
+            <span class="error-message" id="errorMessage"></span>
+            <button class="error-close" onclick="hideError()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- 成功提示组件 -->
+    <div class="success-toast" id="successToast" style="display: none;">
+        <div class="success-content">
+            <i class="fas fa-check-circle success-icon"></i>
+            <span class="success-message" id="successMessage"></span>
+            <button class="success-close" onclick="hideSuccess()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- 主管理界面 -->
+    <div class="dashboard-container" id="dashboardContainer" style="display: none;">
+        <!-- 侧边栏 -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2 class="sidebar-title">
+                    <i class="fas fa-bolt title-icon"></i>
+                    数聚核心
+                </h2>
+                <p class="sidebar-subtitle">后台管理系统</p>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <h3 class="nav-section-title">数据管理</h3>
+                    <ul class="nav-list">
+                        <li class="nav-item active" data-module="feedback">
+                            <i class="fas fa-star nav-icon"></i>
+                            <span class="nav-text">反馈管理</span>
+                            <span class="nav-badge" id="feedbackBadge">0</span>
+                        </li>
+                        <li class="nav-item" data-module="message">
+                            <i class="fas fa-comments nav-icon"></i>
+                            <span class="nav-text">留言管理</span>
+                            <span class="nav-badge" id="messageBadge">0</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="nav-section">
+                    <h3 class="nav-section-title">系统管理</h3>
+                    <ul class="nav-list">
+                        <li class="nav-item" data-module="stats">
+                            <i class="fas fa-chart-bar nav-icon"></i>
+                            <span class="nav-text">系统统计</span>
+                        </li>
+                        <li class="nav-item" data-module="settings">
+                            <i class="fas fa-cog nav-icon"></i>
+                            <span class="nav-text">系统设置</span>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt btn-icon"></i>
+                    退出登录
+                </button>
+            </div>
+        </aside>
+
+        <!-- 主内容区 -->
+        <main class="main-content">
+            <!-- 顶部导航 -->
+            <header class="top-header">
+                <div class="header-left">
+                    <h1 class="page-title" id="pageTitle">反馈管理</h1>
+                    <p class="page-subtitle" id="pageSubtitle">管理用户反馈和建议</p>
+                </div>
+                <div class="header-right">
+                                    <div class="user-info">
+                    <i class="fas fa-user-circle user-avatar"></i>
+                    <span class="user-name" id="userName">管理员</span>
+                </div>
+                <button class="refresh-btn" onclick="refreshCurrentModule()" id="refreshBtn">
+                    <i class="fas fa-sync-alt btn-icon"></i>
+                    <span class="btn-text">刷新</span>
+                    <div class="loading-spinner" style="display: none;">
+                        <i class="fas fa-spinner fa-spin"></i>
+                    </div>
+                </button>
+                </div>
+            </header>
+
+            <!-- 内容区域 -->
+            <div class="content-area">
+                <!-- 反馈管理模块 -->
+                <div class="module-content" id="feedbackModule">
+                    <iframe src="feedback-admin.html" frameborder="0" width="100%" height="100%"></iframe>
+                </div>
+
+                <!-- 留言管理模块 -->
+                <div class="module-content" id="messageModule" style="display: none;">
+                    <iframe src="message-admin.html" frameborder="0" width="100%" height="100%"></iframe>
+                </div>
+
+                <!-- 系统统计模块 -->
+                <div class="module-content" id="statsModule" style="display: none;">
+                    <div class="stats-dashboard">
+                        <div class="stats-header">
+                            <h2>系统统计概览</h2>
+                            <p>实时数据统计和系统状态</p>
+                        </div>
+                        
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-icon">📊</div>
+                                <div class="stat-content">
+                                    <div class="stat-number" id="totalFeedback">0</div>
+                                    <div class="stat-label">总反馈数</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon">💬</div>
+                                <div class="stat-content">
+                                    <div class="stat-number" id="totalMessages">0</div>
+                                    <div class="stat-label">总留言数</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon">⭐</div>
+                                <div class="stat-content">
+                                    <div class="stat-number" id="avgRating">0.0</div>
+                                    <div class="stat-label">平均评分</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon">📈</div>
+                                <div class="stat-content">
+                                    <div class="stat-number" id="todaySubmissions">0</div>
+                                    <div class="stat-label">今日提交</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="charts-container">
+                            <div class="chart-card">
+                                <h3>最近7天提交趋势</h3>
+                                <div class="chart-placeholder">
+                                    <p>图表功能开发中...</p>
+                                </div>
+                            </div>
+                            <div class="chart-card">
+                                <h3>评分分布</h3>
+                                <div class="chart-placeholder">
+                                    <p>图表功能开发中...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 系统设置模块 -->
+                <div class="module-content" id="settingsModule" style="display: none;">
+                    <div class="settings-dashboard">
+                        <div class="settings-header">
+                            <h2>系统设置</h2>
+                            <p>管理系统配置和参数</p>
+                        </div>
+                        
+                        <div class="settings-grid">
+                            <div class="setting-card">
+                                <h3>基本设置</h3>
+                                <div class="setting-item">
+                                    <label>系统名称</label>
+                                    <input type="text" value="数聚核心" disabled>
+                                </div>
+                                <div class="setting-item">
+                                    <label>系统版本</label>
+                                    <input type="text" value="v1.0.0" disabled>
+                                </div>
+                                <div class="setting-item">
+                                    <label>API地址</label>
+                                    <input type="text" value="https://data-core.onrender.com" disabled>
+                                </div>
+                            </div>
+                            
+                            <div class="setting-card">
+                                <h3>安全设置</h3>
+                                <div class="setting-item">
+                                    <label>登录超时时间</label>
+                                    <select>
+                                        <option>30分钟</option>
+                                        <option>1小时</option>
+                                        <option>2小时</option>
+                                    </select>
+                                </div>
+                                <div class="setting-item">
+                                    <label>密码强度要求</label>
+                                    <select>
+                                        <option>中等</option>
+                                        <option>高</option>
+                                        <option>极高</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="setting-card">
+                                <h3>通知设置</h3>
+                                <div class="setting-item">
+                                    <label>新反馈通知</label>
+                                    <input type="checkbox" checked>
+                                </div>
+                                <div class="setting-item">
+                                    <label>新留言通知</label>
+                                    <input type="checkbox" checked>
+                                </div>
+                                <div class="setting-item">
+                                    <label>邮件通知</label>
+                                    <input type="checkbox">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="admin-dashboard.js"></script>
+    <script>
+    if (localStorage.getItem('admin_logged_in') !== '1') {
+      window.location.href = 'login.html';
+    }
+    </script>
+</body>
+</html> 
