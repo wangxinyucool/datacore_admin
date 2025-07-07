@@ -101,8 +101,17 @@ function updateFeedbackList() {
     
     feedbackList.style.display = 'block';
     emptyState.style.display = 'none';
-    
-    feedbackList.innerHTML = filteredFeedback.map(feedback => `
+
+    // 先插入全选框
+    let html = `
+        <div class="select-all-container">
+            <input type="checkbox" id="selectAllCheckbox" class="select-all-checkbox" onchange="toggleSelectAll()">
+            <label for="selectAllCheckbox" class="select-all-label">全选</label>
+        </div>
+    `;
+
+    // 再插入所有反馈项
+    html += filteredFeedback.map(feedback => `
         <div class="feedback-item">
             <div class="feedback-header">
                 <div class="feedback-select">
@@ -116,11 +125,9 @@ function updateFeedbackList() {
                         </div>
                         <span class="feedback-time">${formatTime(feedback.timestamp)}</span>
                     </div>
-                    
                     <div class="feedback-content">
                         <p class="feedback-suggestion">${feedback.suggestion}</p>
                     </div>
-                    
                     <div class="feedback-footer">
                         <span class="feedback-id">ID: ${feedback.id}</span>
                         <span class="feedback-ip">${feedback.ip_address}</span>
@@ -134,6 +141,8 @@ function updateFeedbackList() {
             </div>
         </div>
     `).join('');
+
+    feedbackList.innerHTML = html;
 }
 
 // 更新分页信息
@@ -257,16 +266,18 @@ function generateCSV() {
 function formatTime(timestamp) {
     if (!timestamp) return '';
     
-    // 后端现在返回 YYYY-MM-DDTHH:MM:SS+08:00 格式
+    // 后端返回 YYYY-MM-DDTHH:MM:SS+08:00 格式
     const date = new Date(timestamp);
     
+    // 确保使用中国时区显示
     return date.toLocaleString('zh-CN', {
         year: 'numeric',
         month: '2-digit',
         day: '2-digit',
         hour: '2-digit',
         minute: '2-digit',
-        second: '2-digit'
+        second: '2-digit',
+        timeZone: 'Asia/Shanghai'
     });
 }
 
